@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="assets/icon.png" alt="DeltaRepack Icon" width="90">
+</p>
+
+<p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo_white.png">
     <source media="(prefers-color-scheme: light)" srcset="assets/logo_black.png">
@@ -15,7 +19,7 @@
 
 # DeltaCache
 
-**DeltaCache** prepares external texture caches for **DeltaruneVita** from a final, shipped `data.win`.
+**DeltaCache** prepares external texture caches for **[DeltaruneVita](https://github.com/WolffsRoom/DeltaruneVita)** from a final, shipped `data.win`.
 
 It generates both:
 
@@ -481,29 +485,14 @@ Users must provide their own game files from a legitimate installation.
 
 ---
 
-## Current version
-
-```text
-DeltaCache v0.3.6
-```
-
-Current v0.3.6 changes:
-
-- fixes PVR files generated with `colorSpace = 0`
-- normalizes PVR v3 to sRGB (`colorSpace = 1`)
-- preserves the BC3 payload
-- keeps strict dimension and payload validation
-- includes automatic migration from v0.3.5 fileciteturn40file0L1-L7
-
----
 
 ## Related projects
 
-### DeltaRepack
+### [DeltaRepack](https://github.com/WolffsRoom/DeltaRepack)
 
 Rebuilds GameMaker Texture Pages to reduce Room working-set VRAM.
 
-### DeltaruneVita
+### [DeltaruneVita](https://github.com/WolffsRoom/DeltaruneVita)
 
 The PS Vita port/runtime that consumes the prepared texture caches.
 
