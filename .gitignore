@@ -1,0 +1,8 @@
+﻿chapters/*
+!chapters/README.txt
+
+prepared/*
+!prepared/README.txt
+
+prepared (PTBR)/*
+prepared(Steam v0.0.253)/*
