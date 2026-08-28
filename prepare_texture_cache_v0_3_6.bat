@@ -2,7 +2,7 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
-title DeltaruneVita - Prepare Texture Cache v0.3.6
+title DeltaruneVita - Prepare Texture Cache v0.3.6-r2
 
 set "CURRENT_DIR=%~dp0"
 for %%I in ("%~dp0..") do set "PARENT_DIR=%%~fI"
@@ -53,7 +53,7 @@ where python >nul 2>&1
 if errorlevel 1 (
     cls
     echo ====================================================================================
-    echo  DELTARUNEVITA - PREPARE TEXTURE CACHE v0.3.6
+    echo  DELTARUNEVITA - PREPARE TEXTURE CACHE v0.3.6-r2
     echo ====================================================================================
     echo.
     echo  ERRO: Python nao foi encontrado no PATH.
