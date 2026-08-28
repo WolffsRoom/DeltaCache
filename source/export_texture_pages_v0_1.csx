@@ -82,6 +82,8 @@ for (int pageId = 0; pageId < Data.EmbeddedTextures.Count; pageId++)
     if (image == null)
         throw new Exception("Falha ao decodificar EmbeddedTexture " + pageId);
 
+    // Keep the GameMaker RGBA byte values intact. The cache builder explicitly
+    // uses sRGB input and sRGB output when producing BC3, avoiding gamma shifts.
     image.Depth = 8;
 
     int width = (int)image.Width;
