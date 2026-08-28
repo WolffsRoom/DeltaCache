@@ -335,6 +335,24 @@ colorSpace = 1
 
 DeltaCache v0.3.6 normalizes the PVR v3 header after BC3 conversion while leaving the compressed BC3 payload intact, then performs the normal validation pass. fileciteturn40file0L3-L7
 
+### BC3 color preservation (v0.3.6-r2)
+
+The original v0.3.6 command declared the PNG input as sRGB but left the BC3
+output colour space implicit. PVRTexTool defaults that output to lRGB, causing
+an unwanted global gamma conversion before compression.
+
+The corrected pipeline explicitly preserves sRGB values:
+
+```text
+-ics sRGB -f BC3,UBN,sRGB -m 1
+```
+
+BC3 is used to reduce texture VRAM consumption. It must not globally change
+the artwork's brightness, saturation, or contrast. Only the small amount of
+4×4 block interpolation inherent to BC3/DXT5 is expected.
+
+![BC3 compression method before and after](assets/bc3-color-before-after.png)
+
 ---
 
 ## Runtime texture modes
