@@ -1,7 +1,7 @@
 import csv, json, os, re, shutil, struct, subprocess, sys
 from pathlib import Path
 
-APP_VERSION = '0.3.6-r1'
+APP_VERSION = '0.3.6-r2'
 SOURCE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SOURCE_DIR.parent
 CHAPTERS_DIR = ROOT_DIR / 'chapters'
@@ -12,6 +12,9 @@ CSX = SOURCE_DIR / 'export_texture_pages_v0_1.csx'
 WIDTH = 88
 VTC1, VTC2, VTC5, VTC6 = 0x31435456, 0x32435456, 0x35435456, 0x36435456
 PVR3_MAGIC, PVR_BC3, PVR_SRGB = 0x03525650, 11, 1
+BC3_INPUT_COLORSPACE = 'sRGB'
+BC3_OUTPUT_COLORSPACE = 'sRGB'
+BC3_CHANNEL_TYPE = 'UBN'
 
 
 def clear(): os.system('cls' if os.name == 'nt' else 'clear')
@@ -134,7 +137,12 @@ def make_bc3(png,out):
     for fmt in ('BC3','DXT5'):
         if out.exists():
             out.unlink()
-        r=subprocess.run([str(PVR),'-i',str(png),'-o',str(out),'-f',fmt,'-ics','sRGB','-m','1'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+        # Preserve the PNG's sRGB values in the BC3 payload. Using -ics sRGB
+        # with plain -f BC3 selected PVRTexTool's default lRGB output and
+        # applied an unwanted global gamma conversion before compression.
+        encode_format=f'{fmt},{BC3_CHANNEL_TYPE},{BC3_OUTPUT_COLORSPACE}'
+        cmd=[str(PVR),'-i',str(png),'-o',str(out),'-ics',BC3_INPUT_COLORSPACE,'-f',encode_format,'-m','1']
+        r=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
         if r.returncode==0 and out.is_file():
             normalize_pvr3_bc3_header(out)
             return
@@ -233,7 +241,7 @@ def prepare_chapter(name,source_win):
     # generation loop once visited every page.
     write_complete(ch,tx['count'],cache/'complete.vtc')
     pages={str(p['page']):dict(width=p['width'],height=p['height'],blobOffset=p['blobOffset'],blobSize=p['blobSize'],external=(p['blobOffset']==0),optimized_format=(None if p['blobOffset']==0 else ('BC3' if p['width']==2048 and p['height']==2048 else 'R444'))) for p in tx['pages']}
-    man=dict(tool_version=APP_VERSION,chapter=label,texture_pages=tx['count'],r444_pages=disk_ids,bc3_pages=disk_ids,external_pages=disk_external,txtr=dict(entry_stride=tx['stride'],chunk_start=tx['chunkStart'],chunk_end=tx['chunkEnd']),magic=dict(r444=f'0x{magic(ch):08X}',complete=f'0x{complete_magic(ch):08X}'),pages=pages,validation=dict(r444='PHYSICAL_OK',bc3='PHYSICAL_OK',complete_vtc='WRITTEN_AFTER_PHYSICAL_AUDIT'))
+    man=dict(tool_version=APP_VERSION,chapter=label,texture_pages=tx['count'],r444_pages=disk_ids,bc3_pages=disk_ids,external_pages=disk_external,bc3_encoding=dict(format='BC3/DXT5',channel_type=BC3_CHANNEL_TYPE,input_colorspace=BC3_INPUT_COLORSPACE,output_colorspace=BC3_OUTPUT_COLORSPACE,gamma_conversion=False),txtr=dict(entry_stride=tx['stride'],chunk_start=tx['chunkStart'],chunk_end=tx['chunkEnd']),magic=dict(r444=f'0x{magic(ch):08X}',complete=f'0x{complete_magic(ch):08X}'),pages=pages,validation=dict(r444='PHYSICAL_OK',bc3='PHYSICAL_OK_SRGB_PRESERVED',complete_vtc='WRITTEN_AFTER_PHYSICAL_AUDIT'))
     (out/'texture_manifest.json').write_text(json.dumps(man,indent=2),encoding='utf-8'); return man
 
 def main():
