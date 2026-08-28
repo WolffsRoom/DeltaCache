@@ -347,7 +347,7 @@ BC3 is used to reduce texture VRAM consumption. It must not globally change
 the artwork's brightness, saturation, or contrast. Only the small amount of
 4×4 block interpolation inherent to BC3/DXT5 is expected.
 
-![BC3 compression method before and after](assets/bc3-color-before-after.png)
+![BC3 compression method before and after](assets/bc3-color-before-after.svg)
 
 ---
 
